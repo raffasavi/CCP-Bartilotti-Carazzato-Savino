@@ -1,22 +1,31 @@
+from flask import Flask, request
+from google.cloud import firestore
+app = Flask(__name__)
 
-import cv2
+@app.route('/', methods=['GET'])
+def main():
+    return 'ok'
 
-# Load the cascade
-face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-# Read the input image
-img = cv2.imread('test.jfif')
-# Convert into grayscale
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-# Detect faces
-faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+@app.route('/sensors/sensor', methods=['POST']) ## guardare per gli indirizzi personalizzati con <s>
+def save_data():
+    idsens = request.values['idsens']
+    date = request.values['date']
+    hms = request.values['hms']
+    hour = request.values['hour']
+    value = request.values['value']
+    db = firestore.Client()
+    db.collection(idsens).document(hms).set({'date': date, 'hour':hour, 'value': value})
+        return 'ok', 200
 
-print ("Found {0} faces!".format(len(faces)))
+# funzione per mandare i dati a chi li chiede, infatti il metodo è GET
+@app.route('/sensors/sensor1', methods=['GET'])
+def get_data():
+    db = firestore.Client()
+    result = ''
+    for doc in db.collection('sensor1').stream():
+        result += (f'{doc.id} --> {doc.to_dict()}<br>')
+    return result
 
-
-# Draw rectangle around the faces
-for (x, y, w, h) in faces:
-    cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
-# Display the output
-cv2.imshow('img', img)
-cv2.waitKey()
-
+# esecuzione flask sulla porta 8080
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080, debug=True)
