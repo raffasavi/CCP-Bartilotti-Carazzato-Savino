@@ -15,7 +15,7 @@ def save_data():
     value = request.values['value']
     db = firestore.Client()
     db.collection(idsens).document(hms).set({'date': date, 'hour':hour, 'value': value})
-        return 'ok', 200
+    return 'ok', 200
 
 # funzione per mandare i dati a chi li chiede, infatti il metodo è GET
 @app.route('/sensors/sensor1', methods=['GET'])
