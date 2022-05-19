@@ -59,8 +59,8 @@ while True:
         date = datet.split(" ")[0]
         hms = datet.split(" ")[1][0:-7]
         hour = int(datet.split(" ")[1].split(":")[0])
-        r = post(f'{base_url}/sensors/sensor', data={'idsens': "Sensor 1", 'date': date,'hms':hms,
-                                                      'hour': hour,'value': len(faces),'secret': secret})
+        r = post(f'{base_url}/sensors/s1', data={'date': date,'hms':hms, 'hour': hour,
+                                                 'value': len(faces),'secret': secret})
         #image
         num = datet.replace(":", " ")[0:-7]
         #cv.imwrite("frame {}.png".format(num), img)
