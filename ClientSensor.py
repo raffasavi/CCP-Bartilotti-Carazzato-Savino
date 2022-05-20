@@ -5,7 +5,7 @@
 import cv2 as cv
 import datetime
 import time
-import requests
+from requests import get, post
 from secret import secret
 
 #url del server di gcp
@@ -57,14 +57,16 @@ while True:
         #text
         value = "Sensor 1 * {} * {} *".format(len(faces),datet)
         date = datet.split(" ")[0]
-        hms = datet.split(" ")[1][0:-7]
+        all = datet[0:-7]
         hour = int(datet.split(" ")[1].split(":")[0])
         num = datet.replace(":", " ")[0:-7]
-        r = post(f'{base_url}/sensors/s1', data={'date': date,'hms':hms, 'hour': hour,
-                                                 'value': len(faces),'secret': secret,
-                                                 'file': open('frame {}.jpg'.format(num),'rb')})
+        nameimage = "frame {}.jpg".format(num)
+        cv.imwrite(nameimage, img)
+        files = {'file': open(nameimage, 'rb')}
+        r = post(f'{base_url}/sensors/sensor', data={'idsens': "Sensor 1", 'date': date,
+                                                 'all':all, 'hour': hour,
+                                                 'value': len(faces),'secret': secret}, files=files)
         print('Done: {}'.format(value))
-
 ####################################################################################
 ############################## SPEGNIMENTO DEL SENSORE #############################
 ####################################################################################
