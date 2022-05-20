@@ -1,10 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head>        
+<head>
 	<meta charset="utf-8">
     <title>PAGINA DEL SITO</title>
 	<link rel="stylesheet" href="{{  url_for('static', filename = 'style_lista.css') }}" type="text/css" media="all"/>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable({{dati|safe}});
+
+        var options = {
+          title: 'Affluenza Camera 1',
+          curveType: 'function',
+          legend: { position: 'bottom' }
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+        chart.draw(data, options);
+      }
+    </script>
 </head>
+
 <body>
 	<div class="container">
 		<div class="header">
@@ -16,7 +36,18 @@
 		</div>
 		<h1 class="h1">TITOLO</h1>
 		<div class="scroller">
-			<div class="h3">Parole a caso per il body!!!!</div>
+		<table class="tableh">
+			<tbody>
+			{% for d in dati %}
+			<tr>
+				<td>
+				<h2>{{d[0]}} --> {{d[1]}}</h2>
+				</td>
+			</tr>
+			{% endfor %}
+            </tbody>
+		</table>
+		<div id="curve_chart" style="width: 900px; height: 500px"></div>
 		</div>
 		<div class="footer">
 			<p>copyright &#169 </p>

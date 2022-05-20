@@ -9,7 +9,7 @@ from requests import get, post
 from secret import secret
 
 #url del server di gcp
-base_url = 'https://tuttiinsieme.ew.r.appspot.com'
+base_url = 'https://ccp-barcarsav.ew.r.appspot.com'
 
 
 # Load the cascade
