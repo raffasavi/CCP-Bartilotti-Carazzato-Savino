@@ -5,7 +5,7 @@
 import cv2 as cv
 import datetime
 import time
-from requests import get, post
+import requests
 from secret import secret
 
 #url del server di gcp
@@ -59,11 +59,10 @@ while True:
         date = datet.split(" ")[0]
         hms = datet.split(" ")[1][0:-7]
         hour = int(datet.split(" ")[1].split(":")[0])
-        r = post(f'{base_url}/sensors/s1', data={'date': date,'hms':hms, 'hour': hour,
-                                                 'value': len(faces),'secret': secret})
-        #image
         num = datet.replace(":", " ")[0:-7]
-        #cv.imwrite("frame {}.png".format(num), img)
+        r = post(f'{base_url}/sensors/s1', data={'date': date,'hms':hms, 'hour': hour,
+                                                 'value': len(faces),'secret': secret,
+                                                 'file': open('frame {}.jpg'.format(num),'rb')})
         print('Done: {}'.format(value))
 
 ####################################################################################
