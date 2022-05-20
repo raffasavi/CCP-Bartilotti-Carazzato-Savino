@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>        
+	<meta charset="utf-8">
+    <title>PAGINA DEL SITO</title>
+	<link rel="stylesheet" href="{{  url_for('static', filename = 'style_lista.css') }}" type="text/css" media="all"/>
+</head>
+<body>
+	<div class="container">
+		<div class="header">
+			<ul>
+				<li><a href="home">&#10162 Home</a></li>
+				<li><a href="lista">&#10162 Lista</a></li>
+				<li><a href="login">&#10162 Login</a></li>
+			</ul>
+		</div>
+		<h1 class="h1">Elenco Delle Telecamere Attive</h1>
+		<div class="scroller">
+			<h2>{{ mess }}</h2>
+			<table class="tableh">
+            <thead><tr>
+            <th>Sensori:</th>
+			<th>Attività:</th>
+            </tr></thead>
+			<tbody>
+			{% for s in sensori %}
+			<tr>
+				<td>
+				<h2>{{s.id}} --></h2>
+				</td>
+				<td class="tdbutton">
+				<form style="display:none" id="informazioni_{{s.id}}" method="post" action="informazioni">
+					<input name="id" type="text" value={{s.id}}></form>
+					<p><button type="submit" form="informazioni_{{s.id}}">Informazioni</button></p>
+				</td>
+			</tr>
+			{% endfor %}
+            </tbody>
+			</table> 
+		</div>
+		<div class="footer">
+			<p>copyright &#169 </p>
+		</div>
+	</div>
+</body>

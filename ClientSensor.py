@@ -17,7 +17,7 @@ face_cascade = cv.CascadeClassifier('haarcascade_frontalface_default.xml')
 
 # To capture video from webcam.
 cap = cv.VideoCapture(0)
-cap.set(2,760)
+cap.set(2, 760)
 last_check = 0
 # To use a video file as input
 #cap = cv.VideoCapture('filename.mp4')
@@ -55,7 +55,7 @@ while True:
         #print(t)
 
         #text
-        value = "Sensor 1 * {} * {} *".format(len(faces),datet)
+        value = "Sensor 1 * {} * {} *".format(len(faces), datet)
         date = datet.split(" ")[0]
         all = datet[0:-7]
         hour = int(datet.split(" ")[1].split(":")[0])
@@ -63,9 +63,8 @@ while True:
         nameimage = "frame {}.jpg".format(num)
         cv.imwrite(nameimage, img)
         files = {'file': open(nameimage, 'rb')}
-        r = post(f'{base_url}/sensors/sensor', data={'idsens': "Sensor 1", 'date': date,
-                                                 'all':all, 'hour': hour,
-                                                 'value': len(faces),'secret': secret}, files=files)
+        r = post(f'{base_url}/sensors/sensor1', data={'date': date, 'all': all, 'hour': hour,
+                                                      'value': len(faces), 'secret': secret}, files=files)
         print('Done: {}'.format(value))
 ####################################################################################
 ############################## SPEGNIMENTO DEL SENSORE #############################
@@ -73,7 +72,8 @@ while True:
 
     # Stop if 'escape' key is pressed
     k = cv.waitKey(30) & 0xff
-    if k==27:
+    if k == 27:
         break
+
 # Release the VideoCapture object
 cap.release()
