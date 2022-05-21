@@ -1,16 +1,17 @@
 ####################################################################################
 ################################# LIBRERIE E SETUP #################################
 ####################################################################################
+import math
 
+from requests import post
+from secret import secret
 import cv2 as cv
 import datetime
 import time
-from requests import get, post
-from secret import secret
+import os
 
 #url del server di gcp
-base_url = 'https://ccp-barcarsav.ew.r.appspot.com'
-
+base_url = 'https://ccp-claudiocomp.ew.r.appspot.com'
 
 # Load the cascade
 face_cascade = cv.CascadeClassifier('haarcascade_frontalface_default.xml')
@@ -19,6 +20,7 @@ face_cascade = cv.CascadeClassifier('haarcascade_frontalface_default.xml')
 cap = cv.VideoCapture(0)
 cap.set(2, 760)
 last_check = 0
+nameimages = [] #lista immagini create
 # To use a video file as input
 #cap = cv.VideoCapture('filename.mp4')
 
@@ -54,18 +56,32 @@ while True:
         last_check = t
         #print(t)
 
-        #text
+        #IL NOME DEL SENSORE DEVE ESSERE CAMBIATO AD OGNI DUPLICAZIONE DEL CODICE DI INPUT
+        #ANCHE IL LINK DI INVIO FILE ALLA RIGA 71
         value = "Sensor 1 * {} * {} *".format(len(faces), datet)
-        date = datet.split(" ")[0]
-        all = datet[0:-7]
-        hour = int(datet.split(" ")[1].split(":")[0])
-        num = datet.replace(":", " ")[0:-7]
+        all = datet[0:-7]                              #GIORNO E DATA
+        num = datet.replace(":", " ")[0:-7]            #GIORNO E DATA IN FORMATO SALVABILE
+        date = datet.split(" ")[0]                     #DATA
+        day = int(datet.split(" ")[0].split("-")[0])   #giorno
+        month = int(datet.split(" ")[0].split("-")[1]) #mese
+        hour = int(datet.split(" ")[1].split(":")[0])  #ora
+        min = int(datet.split(" ")[1].split(":")[1])   #min
+        sec = math.floor(float(datet.split(" ")[1].split(":")[2]))        #sec
+        print(value,all,num,date,day,month,hour,min,sec)
         nameimage = "frame {}.jpg".format(num)
         cv.imwrite(nameimage, img)
         files = {'file': open(nameimage, 'rb')}
-        r = post(f'{base_url}/sensors/sensor1', data={'date': date, 'all': all, 'hour': hour,
+        r = post(f'{base_url}/sensors/sensor1', data={'all': all, 'day': day, 'month': month,
+                                                      'hour': hour, 'min': min, 'sec': sec,
                                                       'value': len(faces), 'secret': secret}, files=files)
+
+####################################################################################
+############################## FINE CICLO E PULIZIA ################################
+####################################################################################
+
         print('Done: {}'.format(value))
+        nameimages.append(nameimage)
+
 ####################################################################################
 ############################## SPEGNIMENTO DEL SENSORE #############################
 ####################################################################################
@@ -73,6 +89,8 @@ while True:
     # Stop if 'escape' key is pressed
     k = cv.waitKey(30) & 0xff
     if k == 27:
+        for name in nameimages:
+            os.remove(name) #non elimina l'ultimo frame, da eliminare manualmente
         break
 
 # Release the VideoCapture object
