@@ -61,7 +61,8 @@ while True:
         #ANCHE IL LINK DI INVIO FILE ALLA RIGA 71
         value = "Sensor 1 * {} * {} *".format(len(faces), datet)
         all = datet[0:-7]                              #GIORNO E DATA
-        num = datet.replace(":", " ")[0:-7]            #GIORNO E DATA IN FORMATO SALVABILE
+        prenum = datet.replace(":", "_")[0:-7]         #GIORNO E DATA IN FORMATO SALVABILE
+        num = prenum.replace(" ", "_")
         date = datet.split(" ")[0]                     #DATA
         hms = all.split(" ")[1]                        #ORA
         day = int(datet.split(" ")[0].split("-")[2])   #giorno
@@ -73,10 +74,10 @@ while True:
 
         #invia i dati 3 volte al minuto
         if sec>=16 and sec<=23 or sec>=36 and sec<=43 or sec>=54 and sec<=58:
-            nameimage = "frame {}.jpg".format(num)
+            nameimage = "frame_{}.jpg".format(num)
             cv.imwrite(nameimage, img)
             files = {'file': open(nameimage, 'rb')}
-            r = post(f'{base_url}/sensors/sensor1', data={'all': all, 'day': day, 'month': month,
+            r = post(f'{base_url}/sensors/sensor1', data={'all': num, 'day': day, 'month': month,
                                                       'hour': hour, 'min': min, 'sec': sec, 'hms': hms,
                                                       'value': len(faces), 'secret': secret}, files=files)
             print('Done: {}'.format(value))

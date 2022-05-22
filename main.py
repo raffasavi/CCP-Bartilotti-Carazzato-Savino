@@ -8,6 +8,7 @@ from werkzeug.utils import secure_filename
 from secret import secret
 import smtplib
 import traceback
+import urllib
 import os
 
 ################################################################################################
@@ -73,7 +74,7 @@ def save_data(names):
             # log
             server.login('ccp.project.22@gmail.com', 'claudiocomputing1!')
 
-            # create msg
+            # create msg AGGIUNGERE FORMAT CHE DICE QUALE SENSOR HA VISTO L'INTRUSO
             subject = 'SICUREZZA NEGOZIO'
             if int(value) == 1:
                 b1 = "INTRUDER ALERT: La telecamera ha rilevato un'intrusione fuori orario consentito\n"
@@ -156,6 +157,23 @@ def lh(id):
         if x['hour'] > max:
             max = x['hour']
     return max
+
+# ------------------------------ VISUALIZZAZIONE IMMAGINE
+@app.route('/imm', methods=['POST'])
+def index4():
+    idsens = request.form['id']                      # prendo l'id dell immagine
+    bucket_name = 'raccolta-frame'                   # nome bucket
+    source_blob_name = "frame_{}.jpg".format(idsens) # nome frame
+    destination_file_name = "\static\img"
+    link = "https://storage.cloud.google.com/{}/{}".format(bucket_name,source_blob_name)
+
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(source_blob_name)
+    #blob.download_to_filename(destination_file_name)
+
+    #return urllib.request.urlopen(link)
+    return render_template("frame.html",mess=link, frame=blob)
 
 # esecuzione flask sulla porta 8080
 if __name__ == '__main__':
