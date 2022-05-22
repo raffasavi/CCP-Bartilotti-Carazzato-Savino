@@ -31,6 +31,7 @@ def save_data(names):
     if s == secret:
         # dati su firestore
         all = request.values['all']
+        hms = request.values['hms']
         day = request.values['day']
         month = request.values['month']
         hour = request.values['hour']
@@ -38,9 +39,9 @@ def save_data(names):
         sec = request.values['sec']
         value = request.values['value']
         db = firestore.Client()
-        db.collection(names).document(all).set({'day': int(day), 'month': int(month),
+        db.collection(names).document(all).set({'hms': hms, 'day': int(day), 'month': int(month),
                                                 'hour': int(hour), 'min': int(min), 'sec': int(sec),
-                                                'value': int(value)})
+                                                'value': int(value), 'all': all})
 
         # immagine su cloudstorage
         file = request.files['file']
@@ -128,11 +129,33 @@ def index2():
     db = firestore.Client()
     dati = []
     dati.append(['hour', 'value'])
+    lasth = lh(idsens)
     for doc in db.collection(idsens).stream():
         x = doc.to_dict()
-        dati.append([x['hour'], int(x['value'])])
+        if x['hour'] == lasth:
+            dati.append([x['hms'], int(x['value'])])
     return render_template("profilo_sensore.html", dati=dati)
 
+# ------------------------------ ACCESSO A MAGGIORI INFO DI UN SENSORE
+@app.route('/database', methods=['POST'])
+def index3():
+    idsens = request.form['id']  # prendo l'id dalla form
+    db = firestore.Client()
+    dati = []
+    for doc in db.collection(idsens).stream():
+        x = doc.to_dict()
+        dati.append([x['day'], x['month'], x['hms'], x['value'], x['all']])
+    return render_template("dati_sensore.html", dati=dati)
+
+# ------------------------------ funzione automatica: segna l'ultima ora di funzione del sensore
+def lh(id):
+    db = firestore.Client()
+    max = 0
+    for doc in db.collection(id).stream():
+        x = doc.to_dict()
+        if x['hour'] > max:
+            max = x['hour']
+    return max
 
 # esecuzione flask sulla porta 8080
 if __name__ == '__main__':

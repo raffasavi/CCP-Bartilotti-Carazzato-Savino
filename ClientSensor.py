@@ -20,6 +20,7 @@ face_cascade = cv.CascadeClassifier('haarcascade_frontalface_default.xml')
 cap = cv.VideoCapture(0)
 cap.set(2, 760)
 last_check = 0
+last_photo = 0
 nameimages = [] #lista immagini create
 # To use a video file as input
 #cap = cv.VideoCapture('filename.mp4')
@@ -50,7 +51,7 @@ while True:
 ######################### CREAZIONE E INVIO FILE OUTPUT ############################
 ####################################################################################
 
-    # Output Sensor every 5 seconds
+    # Controlla il tempo ogni 5 seconds
     t = int(time.time())
     if t%5 == 0 and t != last_check:
         last_check = t
@@ -62,25 +63,24 @@ while True:
         all = datet[0:-7]                              #GIORNO E DATA
         num = datet.replace(":", " ")[0:-7]            #GIORNO E DATA IN FORMATO SALVABILE
         date = datet.split(" ")[0]                     #DATA
-        day = int(datet.split(" ")[0].split("-")[0])   #giorno
+        hms = all.split(" ")[1]                        #ORA
+        day = int(datet.split(" ")[0].split("-")[2])   #giorno
         month = int(datet.split(" ")[0].split("-")[1]) #mese
         hour = int(datet.split(" ")[1].split(":")[0])  #ora
         min = int(datet.split(" ")[1].split(":")[1])   #min
         sec = math.floor(float(datet.split(" ")[1].split(":")[2]))        #sec
         print(value,all,num,date,day,month,hour,min,sec)
-        nameimage = "frame {}.jpg".format(num)
-        cv.imwrite(nameimage, img)
-        files = {'file': open(nameimage, 'rb')}
-        r = post(f'{base_url}/sensors/sensor1', data={'all': all, 'day': day, 'month': month,
-                                                      'hour': hour, 'min': min, 'sec': sec,
+
+        #invia i dati 3 volte al minuto
+        if sec>=16 and sec<=23 or sec>=36 and sec<=43 or sec>=54 and sec<=58:
+            nameimage = "frame {}.jpg".format(num)
+            cv.imwrite(nameimage, img)
+            files = {'file': open(nameimage, 'rb')}
+            r = post(f'{base_url}/sensors/sensor1', data={'all': all, 'day': day, 'month': month,
+                                                      'hour': hour, 'min': min, 'sec': sec, 'hms': hms,
                                                       'value': len(faces), 'secret': secret}, files=files)
-
-####################################################################################
-############################## FINE CICLO E PULIZIA ################################
-####################################################################################
-
-        print('Done: {}'.format(value))
-        nameimages.append(nameimage)
+            print('Done: {}'.format(value))
+            nameimages.append(nameimage)      #lista nomi immagini create per poi eliminarle
 
 ####################################################################################
 ############################## SPEGNIMENTO DEL SENSORE #############################

@@ -31,7 +31,12 @@
 				<td class="tdbutton">
 				<form style="display:none" id="informazioni_{{s.id}}" method="post" action="informazioni">
 					<input name="id" type="text" value={{s.id}}></form>
-					<p><button type="submit" form="informazioni_{{s.id}}">Informazioni</button></p>
+					<p><button type="submit" form="informazioni_{{s.id}}">Grafico ultimi dati</button></p>
+				</td>
+				<td class="tdbutton">
+				<form style="display:none" id="database_{{s.id}}" method="post" action="database">
+					<input name="id" type="text" value={{s.id}}></form>
+					<p><button type="submit" form="database_{{s.id}}">Tutti i dati</button></p>
 				</td>
 			</tr>
 			{% endfor %}

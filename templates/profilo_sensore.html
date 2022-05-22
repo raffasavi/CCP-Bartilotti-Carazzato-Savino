@@ -13,7 +13,7 @@
         var data = google.visualization.arrayToDataTable({{dati|safe}});
 
         var options = {
-          title: 'Affluenza Camera 1',
+          title: 'Affluenza Ultima Ora',
           curveType: 'function',
           legend: { position: 'bottom' }
         };
@@ -24,7 +24,6 @@
       }
     </script>
 </head>
-
 <body>
 	<div class="container">
 		<div class="header">
@@ -36,17 +35,6 @@
 		</div>
 		<h1 class="h1">TITOLO</h1>
 		<div class="scroller">
-		<table class="tableh">
-			<tbody>
-			{% for d in dati %}
-			<tr>
-				<td>
-				<h2>{{d[0]}} --> {{d[1]}}</h2>
-				</td>
-			</tr>
-			{% endfor %}
-            </tbody>
-		</table>
 		<div id="curve_chart" style="width: 900px; height: 500px"></div>
 		</div>
 		<div class="footer">
