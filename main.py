@@ -144,7 +144,8 @@ def index3():
     dati = []
     for doc in db.collection(idsens).stream():
         x = doc.to_dict()
-        dati.append([x['day'], x['month'], x['hms'], x['value'], x['all']])
+        key = idsens + "_" + x['all']
+        dati.append([x['day'], x['month'], x['hms'], x['value'], key])
     return render_template("dati_sensore.html", dati=dati)
 
 # ------------------------------ funzione automatica: segna l'ultima ora di funzione del sensore
@@ -165,10 +166,9 @@ def lh(id):
 # ------------------------------ VISUALIZZAZIONE IMMAGINE
 @app.route('/imm', methods=['POST'])
 def index4():
-    idsens = request.form['id']                      # prendo l'id dell immagine
+    idsenseimm = request.form['id']                  # prendo l'id dell immagine
     bucket_name = 'raccolta-frame'                   # nome bucket
-    fname = "frame_{}.jpg".format(idsens) # nome frame
-    destination_file_name = "\static\img"
+    fname = "frame_{}.jpg".format(idsenseimm)        # nome frame
 
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)

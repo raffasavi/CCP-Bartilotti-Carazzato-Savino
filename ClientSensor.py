@@ -74,7 +74,7 @@ while True:
 
         #invia i dati 3 volte al minuto
         if sec>=16 and sec<=23 or sec>=36 and sec<=43 or sec>=54 and sec<=58:
-            nameimage = "frame_{}.jpg".format(num)
+            nameimage = "frame_sensor1_{}.jpg".format(num)
             cv.imwrite(nameimage, img)
             files = {'file': open(nameimage, 'rb')}
             r = post(f'{base_url}/sensors/sensor1', data={'all': num, 'day': day, 'month': month,
