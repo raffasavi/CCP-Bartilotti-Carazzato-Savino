@@ -2,13 +2,12 @@
 ######################################### LIBRERIE #############################################
 ################################################################################################
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, send_file
 from google.cloud import firestore, storage
 from werkzeug.utils import secure_filename
 from secret import secret
 import smtplib
 import traceback
-import urllib
 import os
 
 ################################################################################################
@@ -151,29 +150,31 @@ def index3():
 # ------------------------------ funzione automatica: segna l'ultima ora di funzione del sensore
 def lh(id):
     db = firestore.Client()
-    max = 0
+    maxh = 0
+    maxd = 0
     for doc in db.collection(id).stream():
         x = doc.to_dict()
-        if x['hour'] > max:
-            max = x['hour']
-    return max
+        if x['day'] > maxd:
+            maxd = x['day']
+    for doc in db.collection(id).stream():
+        x = doc.to_dict()
+        if x['hour'] > maxh and x['day'] == maxd:
+            maxh = x['hour']
+    return maxh
 
 # ------------------------------ VISUALIZZAZIONE IMMAGINE
 @app.route('/imm', methods=['POST'])
 def index4():
     idsens = request.form['id']                      # prendo l'id dell immagine
     bucket_name = 'raccolta-frame'                   # nome bucket
-    source_blob_name = "frame_{}.jpg".format(idsens) # nome frame
+    fname = "frame_{}.jpg".format(idsens) # nome frame
     destination_file_name = "\static\img"
-    link = "https://storage.cloud.google.com/{}/{}".format(bucket_name,source_blob_name)
 
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
-    blob = bucket.blob(source_blob_name)
-    #blob.download_to_filename(destination_file_name)
-
-    #return urllib.request.urlopen(link)
-    return render_template("frame.html",mess=link, frame=blob)
+    blob = bucket.blob(fname)
+    blob.download_to_filename(os.path.join('/tmp/', fname))
+    return send_file(os.path.join('/tmp/', fname), mimetype='image/jpeg')
 
 # esecuzione flask sulla porta 8080
 if __name__ == '__main__':
