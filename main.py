@@ -187,10 +187,11 @@ def index6():
     nreg = registra(indirizzo)
 
     # download file
-#    buck_name = 'file_progetto'
-#    destination_name = "dwn_read_to_start.txt"
-#    souce_name = "read_to_start.txt"
-#    download_blob(buck_name, destination_name, souce_name)
+    #os.environ['ccp-claudiocomp'] = 'ccp-claudiocomp-5d6f8fb344e7.json'
+    buck_name = 'file_progetto'
+    destination_name = r"C:\Users\dwn_read_to_start.txt"
+    souce_name = "read_to_start.txt"
+    download_blob(buck_name, destination_name, souce_name)
 
     dati = "il tuo sensore è il numero: {}".format(+nreg)
     return render_template("download2.html", dati=dati)
@@ -206,12 +207,15 @@ def registra(indirizzo):
     db.collection("registrati").document(indirizzo).set({'email': indirizzo, "sensor": nreg})
     return nreg
 
-#def download_blob(bucket_name, source_blob_name, destination_file_name):
-#    storage_client = storage.Client()
-#    bucket = storage_client.bucket(bucket_name)
-#    blob = bucket.blob(source_blob_name)
-#    blob.download_to_filename(destination_file_name)
-#    return 'ok'
+def download_blob(bucket_name, source_blob_name, destination_file_name):
+    try:
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(source_blob_name)
+        blob.download_to_filename(destination_file_name)
+        return 'ok'
+    except Exception as e:
+        print(e)
 
 # esecuzione flask sulla porta 8080
 if __name__ == '__main__':

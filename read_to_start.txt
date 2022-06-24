@@ -1,0 +1,13 @@
+Oltre a questo file e all' haarcascade_frontalface_default.xml necessario al funzionamento del client,
+il download comprende il file clientclean.py che è il codice da lanciare, 
+prima di farlo deve essere completato andando ad aggiungere il numero del sensore 
+che ti è stato assegnato nei riquadri con scritto [INSERISCI QUI IL NUMERO].
+
+alle righe: 62-77-80.
+
+una volta lanciato, ogni 20 secondi il codice manda al server il conteggio delle persone inquadrate 
+dalla webcam, il timestamp e uno screen.
+Inoltre ti verrà inviata una email all'indirizzo utilizzato da te in fase di registrazione se
+verranno registrate delle persone al di fuori dell'orario consentito.
+
+il link per la web app è: https://ccp-claudiocomp.ew.r.appspot.com/
