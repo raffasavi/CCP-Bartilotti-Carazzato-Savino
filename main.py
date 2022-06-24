@@ -144,7 +144,8 @@ def index3():
     dati = []
     for doc in db.collection(idsens).stream():
         x = doc.to_dict()
-        dati.append([x['day'], x['month'], x['hms'], x['value'], x['all']])
+        key = idsens + "_" + x['all']
+        dati.append([x['day'], x['month'], x['hms'], x['value'], key])
     return render_template("dati_sensore.html", dati=dati)
 
 # ------------------------------ funzione automatica: segna l'ultima ora di funzione del sensore
@@ -165,16 +166,52 @@ def lh(id):
 # ------------------------------ VISUALIZZAZIONE IMMAGINE
 @app.route('/imm', methods=['POST'])
 def index4():
-    idsens = request.form['id']                      # prendo l'id dell immagine
+    idsenseimm = request.form['id']                  # prendo l'id dell immagine
     bucket_name = 'raccolta-frame'                   # nome bucket
-    fname = "frame_{}.jpg".format(idsens) # nome frame
-    destination_file_name = "\static\img"
+    fname = "frame_{}.jpg".format(idsenseimm)        # nome frame
 
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(fname)
     blob.download_to_filename(os.path.join('/tmp/', fname))
     return send_file(os.path.join('/tmp/', fname), mimetype='image/jpeg')
+
+#---------------------------------- REGISTRAZIONE NUOVO SENSORE E INVIO FILE
+@app.route('/download')
+def index5():
+    return render_template("download.html")
+
+@app.route('/salva',methods=('GET', 'POST'))
+def index6():
+    indirizzo = request.form['email']
+    nreg = registra(indirizzo)
+
+    # download file
+#    buck_name = 'file_progetto'
+#    destination_name = "dwn_read_to_start.txt"
+#    souce_name = "read_to_start.txt"
+#    download_blob(buck_name, destination_name, souce_name)
+
+    dati = "il tuo sensore è il numero: {}".format(+nreg)
+    return render_template("download2.html", dati=dati)
+
+def registra(indirizzo):
+    # ricerca numero iscrizione
+    db = firestore.Client()
+    nreg = 0
+    for doc in db.collection("registrati").stream():
+        nreg = nreg + 1
+    # registrazione
+    nreg = nreg + 1
+    db.collection("registrati").document(indirizzo).set({'email': indirizzo, "sensor": nreg})
+    return nreg
+
+#def download_blob(bucket_name, source_blob_name, destination_file_name):
+#    storage_client = storage.Client()
+#    bucket = storage_client.bucket(bucket_name)
+#    blob = bucket.blob(source_blob_name)
+#    blob.download_to_filename(destination_file_name)
+#    return 'ok'
 
 # esecuzione flask sulla porta 8080
 if __name__ == '__main__':

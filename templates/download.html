@@ -11,12 +11,16 @@
 			<ul>
 				<li><a href="home">&#10162 Home</a></li>
 				<li><a href="lista">&#10162 Lista</a></li>
-				<li><a href="login">&#10162 Login</a></li>
+				<li><a href="download">&#10162 Download</a></li>
 			</ul>
 		</div>
-		<h1 class="h1">TITOLO</h1>
+		<h1 class="h1">ISCRIZIONE</h1>
 		<div class="scroller">
-			<div class="h3">Parole a caso per il body!!!!</div>
+			<div class="h3">Digita il tuo indirizzo email per registrarti, verrai reindirizzato alla pagina di download dei file.</div>
+			<form id="salva" method="post" action="salva">
+				<p>EMAIL:</p><input type="text" id="email" name="email" value="{{ email }}" class="i2"/>
+			    <input type="submit" class="inputbutton" value="Invia"/>
+			</form>
 		</div>
 		<div class="footer">
 			<p>copyright &#169 </p>
