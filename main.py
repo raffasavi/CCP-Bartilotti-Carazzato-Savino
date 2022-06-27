@@ -60,18 +60,18 @@ def save_data(names):
 ###################################### EMAIL INTRUDER ##########################################
 ################################################################################################
 
-        if int(hour) >= 12 and int(value) >= 1 and int(sec) >= 54: #and sec >= 54:
+        if int(hour) >= 0 and int(value) >= 1 and int(sec) >= 54: #and sec >= 54:
 
             # and int(value) >= 1: // intanto prova orario + verifica se serve o no int
             #                      // invia una mail ogni volta che client invia un dato
             # if int(hour) >= 22 and int(hour) <6 and int(value) >= 1:
 
             ####funzione invio mail
-            server = smtplib.SMTP(host='smtp.gmail.com', port=587)
+            server = smtplib.SMTP(host='smtp.mail.yahoo.com', port=587)
             server.ehlo()
             server.starttls()
             # log
-            server.login('ccp.project.22@gmail.com', 'claudiocomputing1!')
+            server.login('ccp_project_22@yahoo.com', 'qcpahfktdbhdhlzo')
 
             # create msg AGGIUNGERE FORMAT CHE DICE QUALE SENSOR HA VISTO L'INTRUSO
             subject = 'SICUREZZA NEGOZIO'
@@ -87,7 +87,15 @@ def save_data(names):
             # struttura
             message = f'Subject: {subject}\n\n{body}'
             # invio e chiudo comunicazione
-            server.sendmail('ccp.project.22@gmail.com', 'ccp.project.22@gmail.com', message)
+            #ricerca destinatario
+            sensor = int(names[-1:])
+
+            for doc in db.collection("registrati").stream():
+                x = doc.to_dict()
+                if x['sensor'] == sensor:
+                    destinatario = x['email']
+
+            server.sendmail('ccp_project_22@yahoo.com', destinatario, message)
             server.quit()
             ####
         ######
