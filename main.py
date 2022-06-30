@@ -38,6 +38,8 @@ def save_data(names):
         min = request.values['min']
         sec = request.values['sec']
         value = request.values['value']
+
+        #salvataggio firestore
         db = firestore.Client()
         db.collection(names).document(all).set({'hms': hms, 'day': int(day), 'month': int(month),
                                                 'hour': int(hour), 'min': int(min), 'sec': int(sec),
@@ -126,8 +128,9 @@ def mostra_lista():
     result = []
     sensori = db.collections()
     for racc in sensori:
-        sensore = {'id': racc.id}
-        result.append(sensore)
+        if racc.id != "registrati":
+            sensore = {'id': racc.id}
+            result.append(sensore)
     return result
 
 # ------------------------------ ACCESSO A MAGGIORI INFO DI UN SENSORE
@@ -137,10 +140,10 @@ def index2():
     db = firestore.Client()
     dati = []
     dati.append(['hour', 'value'])
-    lasth = lh(idsens)
+    last = lh(idsens)
     for doc in db.collection(idsens).stream():
         x = doc.to_dict()
-        if x['hour'] == lasth:
+        if x['hour'] == last[1] and x['day'] == last[0]:
             dati.append([x['hms'], int(x['value'])])
     return render_template("profilo_sensore.html", dati=dati)
 
@@ -169,7 +172,8 @@ def lh(id):
         x = doc.to_dict()
         if x['hour'] > maxh and x['day'] == maxd:
             maxh = x['hour']
-    return maxh
+    max = [maxd, maxh]
+    return max
 
 # ------------------------------ VISUALIZZAZIONE IMMAGINE
 @app.route('/imm', methods=['POST'])
@@ -194,13 +198,6 @@ def index6():
     indirizzo = request.form['email']
     nreg = registra(indirizzo)
 
-    # download file
-    #os.environ['ccp-claudiocomp'] = 'ccp-claudiocomp-5d6f8fb344e7.json'
-    #buck_name = 'file_progetto'
-    #destination_name = "dwn_read_to_start.txt"
-    #souce_name = "read_to_start.txt"
-    #download_blob(buck_name, destination_name, souce_name)
-
     dati = "il tuo sensore è il numero: {}".format(+nreg)
     return render_template("download2.html", dati=dati)
 
@@ -214,16 +211,6 @@ def registra(indirizzo):
     nreg = nreg + 1
     db.collection("registrati").document(indirizzo).set({'email': indirizzo, "sensor": nreg})
     return nreg
-
-#def download_blob(bucket_name, source_blob_name, destination_file_name):
-#    try:
-#        storage_client = storage.Client()
-#        bucket = storage_client.bucket(bucket_name)
-#        blob = bucket.blob(source_blob_name)
-#        blob.download_to_filename(destination_file_name)
-#        return 'ok'
-#    except Exception as e:
-#        print(e)
 
 # esecuzione flask sulla porta 8080
 if __name__ == '__main__':
